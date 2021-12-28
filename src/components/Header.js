@@ -168,6 +168,9 @@ function HeaderMobile(props) {
         </ul>
         <div className="buttons">
           <p className="disabled">{props.todos.length} items left</p>
+          <p className="disabled">Clear Complete</p>
+        </div>
+        <div className="buttons">
           <p
             onClick={() => setSort("all")}
             style={sort === "all" ? { color: "#3A7CFD" } : { color: "inherit" }}
@@ -190,7 +193,6 @@ function HeaderMobile(props) {
           >
             Completed
           </p>
-          <p className="disabled">Clear Complete</p>
         </div>
       </div>
     </HeaderMobileWrap>
