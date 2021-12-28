@@ -1,13 +1,11 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import styled from "styled-components";
 import { ReactComponent as Oval } from "../assets/images/Oval.svg";
 import { ReactComponent as Fill } from "../assets/images/Fill.svg";
 import { ReactComponent as Close } from "../assets/images/icon-cross.svg";
 
 function TodosItemjs(props) {
-  const { item, updateTodo, removeTodo, completeTodo } = props;
-  // const [click, setClick] = useState(false);
-  const inputRef = useRef();
+  const { item, removeTodo, completeTodo } = props;
 
   const clickHandler = () => {
     completeTodo(item.id);
