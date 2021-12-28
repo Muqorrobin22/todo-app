@@ -14,7 +14,7 @@ function TodosItemjs(props) {
   };
 
   return (
-    <ListWrap key={item.id} className="list" tema={props.tema}>
+    <ListWrap key={item.id} className="list" tema={props.tema} isDesktop>
       {item.completed ? (
         <Fill onClick={clickHandler} />
       ) : (
@@ -38,7 +38,7 @@ function TodosItemjs(props) {
 const ListWrap = styled.li`
   background: ${(props) => (props.tema === "light" ? "white" : "#25273D")};
   color: ${(props) => (props.tema === "light" ? "black" : "white")};
-  width: 80vw;
+  width: ${(props) => (props.isDesktop ? "80vw" : "80vw")};
   height: 48px;
   border-radius: 5px;
   box-sizing: border-box;

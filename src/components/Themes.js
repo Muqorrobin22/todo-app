@@ -188,4 +188,43 @@ export const HeaderDesktopWrap = styled.header`
     left: 50%;
     transform: translateX(-50%);
   }
+  .wrap_list {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding-top: 24.6rem;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    background: ${(props) => (props.tema === "light" ? "white" : "#25273D")};
+    color: ${(props) => (props.tema === "light" ? "black" : "#5B5E7E")};
+    width: 80%;
+    height: 48px;
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding: 1.4rem 2rem;
+    box-shadow: ${(props) =>
+      props.tema === "light"
+        ? "0px 35px 50px -15px rgba(194, 195, 214, 0.5)"
+        : "20px 28px 40px 1px rgba(0, 0, 0, 0.5)"};
+    p {
+      font-family: Josefin Sans;
+      font-style: normal;
+      font-weight: bold;
+      font-size: 14px;
+      line-height: 14px;
+    }
+    p:hover,
+    p:active {
+      color: #3a7cfd;
+    }
+    .disabled {
+      opacity: 0.5;
+    }
+  }
 `;

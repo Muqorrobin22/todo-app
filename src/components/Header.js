@@ -95,7 +95,13 @@ function HeaderMobile(props) {
     <MyInputDesktop tema={theme}>
       {fillAction}
       <form onSubmit={add}>
-        <input type="text" placeholder="Create a new todo..." required />
+        <input
+          type="text"
+          placeholder="Create a new todo..."
+          required
+          onChange={inputHandler}
+          value={todo}
+        />
       </form>
       <Button variant="contained" onClick={add}>
         Upload
@@ -184,14 +190,18 @@ function HeaderMobile(props) {
           >
             Completed
           </p>
-          <p className="disabled">clear todo</p>
+          <p className="disabled">Clear Complete</p>
         </div>
       </div>
     </HeaderMobileWrap>
   );
 
   const headerDesktop = (
-    <HeaderDesktopWrap images={theme}>
+    <HeaderDesktopWrap
+      images={theme}
+      tema={theme}
+      isDesktop={isDesktopOrLaptop}
+    >
       <div className="wrap">
         <h1>todo</h1>
         {theme === "light" ? (
@@ -201,6 +211,79 @@ function HeaderMobile(props) {
         )}
       </div>
       <div className="wrap_input">{InputDesktop}</div>
+      <div className="wrap_list">
+        <ul>
+          {props.todos.length > 0 && sort === "active"
+            ? props.todos.map((item) => {
+                return (
+                  item.completed === false && (
+                    <TodosItemjs
+                      key={item.id}
+                      item={item}
+                      tema={theme}
+                      completeTodo={props.completeTodo}
+                      removeTodo={props.removeTodo}
+                    ></TodosItemjs>
+                  )
+                );
+              })
+            : null}
+          {props.todos.length > 0 && sort === "completed"
+            ? props.todos.map((item) => {
+                return (
+                  item.completed === true && (
+                    <TodosItemjs
+                      key={item.id}
+                      item={item}
+                      tema={theme}
+                      completeTodo={props.completeTodo}
+                      removeTodo={props.removeTodo}
+                    ></TodosItemjs>
+                  )
+                );
+              })
+            : null}
+          {props.todos.length > 0 && sort === "all"
+            ? props.todos.map((item) => {
+                return (
+                  <TodosItemjs
+                    key={item.id}
+                    item={item}
+                    tema={theme}
+                    completeTodo={props.completeTodo}
+                    removeTodo={props.removeTodo}
+                  ></TodosItemjs>
+                );
+              })
+            : null}
+        </ul>
+        <div className="buttons">
+          <p className="disabled">{props.todos.length} items left</p>
+          <p
+            onClick={() => setSort("all")}
+            style={sort === "all" ? { color: "#3A7CFD" } : { color: "inherit" }}
+          >
+            All
+          </p>
+          <p
+            onClick={() => setSort("active")}
+            style={
+              sort === "active" ? { color: "#3A7CFD" } : { color: "inherit" }
+            }
+          >
+            Active
+          </p>
+          <p
+            onClick={() => setSort("completed")}
+            style={
+              sort === "completed" ? { color: "#3A7CFD" } : { color: "inherit" }
+            }
+          >
+            Completed
+          </p>
+          <p className="disabled">Clear Complete</p>
+        </div>
+      </div>
     </HeaderDesktopWrap>
   );
 
