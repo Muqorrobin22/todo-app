@@ -1,5 +1,5 @@
 import "./App.css";
-import { HeaderMobile } from "./components/Header";
+import HeaderMobile from "./components/Header";
 
 function App() {
   return (

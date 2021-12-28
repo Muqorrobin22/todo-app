@@ -1,9 +1,8 @@
 import React from "react";
-import styled from "styled-components";
-import imagesLight from "../assets/images/bg-mobile-light.jpg";
-import imagesDark from "../assets/images/bg-mobile-dark.jpg";
-import imagesLightDesktop from "../assets/images/bg-desktop-light.jpg";
-import imagesDarkDesktop from "../assets/images/bg-desktop-dark.jpg";
+import { MyInput } from "./Themes";
+import { MyInputDesktop } from "./Themes";
+import { HeaderDesktopWrap } from "./Themes";
+import { HeaderMobileWrap } from "./Themes";
 import { ReactComponent as Moon } from "../assets/images/icon-moon.svg";
 import { ReactComponent as Sun } from "../assets/images/icon-sun.svg";
 import { ReactComponent as Oval } from "../assets/images/Oval.svg";
@@ -14,16 +13,38 @@ import { lightTheme, darkTheme } from "./Themes";
 import { useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import Button from "@mui/material/Button";
-// import TextField from "@mui/material/TextField";
-// import { styled } from "@mui/styles";
+import { addTodos, removeTodos, completeTodos } from "../redux/reducer";
+import { connect } from "react-redux";
+import TodosItemjs from "./TodosItem";
 
-export function HeaderMobile(props) {
+const mapStateToProps = (state) => {
+  return {
+    todos: state,
+  };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    addTodo: (obj) => dispatch(addTodos(obj)),
+    removeTodo: (id) => dispatch(removeTodos(id)),
+    completeTodo: (id) => dispatch(completeTodos(id)),
+  };
+};
+
+function HeaderMobile(props) {
   const [theme, setTheme] = useState("light");
   const [empty, setEmpty] = useState(false);
+  const [todo, setTodo] = useState("");
+  const [sort, setSort] = useState("active");
 
   const isDesktopOrLaptop = useMediaQuery({
     query: "(min-width: 1440px)",
   });
+
+  const inputHandler = (e) => {
+    setTodo(e.target.value);
+    console.log(e.target.value);
+  };
 
   const fillToggle = () => {
     setEmpty((prevState) => !prevState);
@@ -33,24 +54,39 @@ export function HeaderMobile(props) {
     theme === "light" ? setTheme("dark") : setTheme("light");
   };
 
-  const submitHandler = (event) => {
-    event.preventDefault();
-    console.log("submit");
-  };
-
   const fillAction = empty ? (
     <Fill onClick={fillToggle} />
   ) : (
     <Oval onClick={fillToggle} />
   );
 
+  const add = (event) => {
+    event.preventDefault();
+    if (todo === "") {
+      alert("Todos Kosongg om!");
+    } else {
+      props.addTodo({
+        id: Math.floor(Math.random() * 1000),
+        item: todo,
+        completed: false,
+      });
+      setTodo("");
+    }
+  };
+
   const InputMobile = (
     <MyInput tema={theme}>
       {fillAction}
-      <form onSubmit={submitHandler}>
-        <input type="text" placeholder="Create a new todo..." required />
+      <form onSubmit={add}>
+        <input
+          type="text"
+          placeholder="Create a new todo..."
+          required
+          onChange={inputHandler}
+          value={todo}
+        />
       </form>
-      <Button variant="contained" onClick={submitHandler}>
+      <Button variant="contained" onClick={add}>
         Upload
       </Button>
     </MyInput>
@@ -58,17 +94,17 @@ export function HeaderMobile(props) {
   const InputDesktop = (
     <MyInputDesktop tema={theme}>
       {fillAction}
-      <form onSubmit={submitHandler}>
+      <form onSubmit={add}>
         <input type="text" placeholder="Create a new todo..." required />
       </form>
-      <Button variant="contained" onClick={submitHandler} className="btn">
+      <Button variant="contained" onClick={add}>
         Upload
       </Button>
     </MyInputDesktop>
   );
 
   const headerMobile = (
-    <HeaderMobileWrap images={theme}>
+    <HeaderMobileWrap images={theme} tema={theme}>
       <div className="wrap">
         <h1>todo</h1>
         {theme === "light" ? (
@@ -78,6 +114,79 @@ export function HeaderMobile(props) {
         )}
       </div>
       <div className="wrap_input">{InputMobile}</div>
+      <div className="wrap_list">
+        <ul>
+          {props.todos.length > 0 && sort === "active"
+            ? props.todos.map((item) => {
+                return (
+                  item.completed === false && (
+                    <TodosItemjs
+                      key={item.id}
+                      item={item}
+                      tema={theme}
+                      completeTodo={props.completeTodo}
+                      removeTodo={props.removeTodo}
+                    ></TodosItemjs>
+                  )
+                );
+              })
+            : null}
+          {props.todos.length > 0 && sort === "completed"
+            ? props.todos.map((item) => {
+                return (
+                  item.completed === true && (
+                    <TodosItemjs
+                      key={item.id}
+                      item={item}
+                      tema={theme}
+                      completeTodo={props.completeTodo}
+                      removeTodo={props.removeTodo}
+                    ></TodosItemjs>
+                  )
+                );
+              })
+            : null}
+          {props.todos.length > 0 && sort === "all"
+            ? props.todos.map((item) => {
+                return (
+                  <TodosItemjs
+                    key={item.id}
+                    item={item}
+                    tema={theme}
+                    completeTodo={props.completeTodo}
+                    removeTodo={props.removeTodo}
+                  ></TodosItemjs>
+                );
+              })
+            : null}
+        </ul>
+        <div className="buttons">
+          <p className="disabled">{props.todos.length} items left</p>
+          <p
+            onClick={() => setSort("all")}
+            style={sort === "all" ? { color: "#3A7CFD" } : { color: "inherit" }}
+          >
+            All
+          </p>
+          <p
+            onClick={() => setSort("active")}
+            style={
+              sort === "active" ? { color: "#3A7CFD" } : { color: "inherit" }
+            }
+          >
+            Active
+          </p>
+          <p
+            onClick={() => setSort("completed")}
+            style={
+              sort === "completed" ? { color: "#3A7CFD" } : { color: "inherit" }
+            }
+          >
+            Completed
+          </p>
+          <p className="disabled">clear todo</p>
+        </div>
+      </div>
     </HeaderMobileWrap>
   );
 
@@ -103,136 +212,4 @@ export function HeaderMobile(props) {
   );
 }
 
-const MyInput = styled.div`
-  background: ${(props) => (props.tema === "light" ? "white" : "#25273D")};
-  color: ${(props) => (props.tema === "light" ? "black" : "white")};
-  width: 80vw;
-  height: 48px;
-  box-shadow: 0px 35px 50px -15px rgba(194, 195, 214, 0.5);
-  border-radius: 5px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  padding: 1.4rem 2rem;
-  justify-content: space-between;
-  form {
-    display: flex;
-    align-items: center;
-  }
-  input {
-    background: ${(props) =>
-      props.tema === "light" ? "white" : "transparent"};
-    outline: none;
-    border: none;
-    width: 50vw;
-    height: 2rem;
-    margin-left: 1.2rem;
-    font-family: Josefin Sans;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 18px;
-    letter-spacing: -0.25px;
-    color: ${(props) => (props.tema === "light" ? "#393A4B" : "#C8CBE7")};
-  }
-`;
-
-const MyInputDesktop = styled.div`
-  background: ${(props) => (props.tema === "light" ? "white" : "#25273D")};
-  color: ${(props) => (props.tema === "light" ? "black" : "white")};
-  width: 50vw;
-  height: 48px;
-  box-shadow: 0px 35px 50px -15px rgba(194, 195, 214, 0.5);
-  border-radius: 5px;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  padding: 1.4rem 2rem;
-  justify-content: space-between;
-  form {
-    display: flex;
-    align-items: center;
-  }
-  input {
-    background: ${(props) =>
-      props.tema === "light" ? "white" : "transparent"};
-    outline: none;
-    border: none;
-    width: 40vw;
-    height: 2rem;
-    margin-left: 1.2rem;
-    font-family: Josefin Sans;
-    font-style: normal;
-    font-weight: normal;
-    font-size: 18px;
-    line-height: 18px;
-    letter-spacing: -0.25px;
-    color: ${(props) => (props.tema === "light" ? "#393A4B" : "#C8CBE7")};
-  }
-`;
-
-const HeaderMobileWrap = styled.header`
-  background: url(${(props) =>
-      props.images === "light" ? imagesLight : imagesDark})
-    no-repeat;
-  background-size: cover;
-  height: 20rem;
-  position: relative;
-  transition: all 0.5s ease;
-  .wrap {
-    width: 80%;
-    position: absolute;
-    top: 4.8rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  h1 {
-    text-transform: uppercase;
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 600;
-    letter-spacing: 1rem;
-  }
-  .wrap_input {
-    position: absolute;
-    top: 10.8rem;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-`;
-
-const HeaderDesktopWrap = styled.header`
-  background: url(${(props) =>
-      props.images === "light" ? imagesLightDesktop : imagesDarkDesktop})
-    no-repeat;
-  background-size: cover;
-  height: 30rem;
-  position: relative;
-  transition: all 0.5s ease;
-  .wrap {
-    width: 80%;
-    position: absolute;
-    top: 4.8rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  h1 {
-    text-transform: uppercase;
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 600;
-    letter-spacing: 1rem;
-  }
-  .wrap_input {
-    position: absolute;
-    top: 15.8rem;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-`;
+export default connect(mapStateToProps, mapDispatchToProps)(HeaderMobile);
